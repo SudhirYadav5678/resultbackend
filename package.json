@@ -1,0 +1,11 @@
+{
+  "name": "resultb",
+  "version": "1.0.0",
+  "description": "This is a backend for the result.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SudhirYadav5678",
+  "license": "ISC"
+}
