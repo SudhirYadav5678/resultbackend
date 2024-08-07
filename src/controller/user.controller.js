@@ -7,11 +7,8 @@ import jwt from "jsonwebtoken"
 
 
 const registerUser = async function (req, res) {
-    //console.log("hello");
-
     const { userName, email, password } = await req.body
     //console.log(userName, email, password);
-
     if (
         [email, userName, password].some((field) => field?.trim() === "")
     ) {
@@ -23,10 +20,6 @@ const registerUser = async function (req, res) {
     if (existedUser) {
         throw new Error(409, "User with email already exists")
     }
-
-    //password bcrypt
-    const hashPassword = await bcrypt.hash(password, 10);
-
     //avatar
     const avatarLocalPath = req.files?.avatar[0]?.path;
     if (!avatarLocalPath) {
@@ -39,7 +32,7 @@ const registerUser = async function (req, res) {
     const user = await User.create({
         userName,
         email,
-        password: hashPassword,
+        password,
         avatar: avatar.url,
     })
     return res.status(201).json(
@@ -50,14 +43,17 @@ const registerUser = async function (req, res) {
     )
 }
 
-
 const logInUser = async function (req, res) {
     const { email, password } = req.body
+    console.log(email, password);
+
     const user = await User.findOne({ email })
+    console.log(user);
+
     if (!user) {
         return res.status(201).json(
             {
-                success: true,
+                success: false,
                 message: "User does not exist"
             }
         )
@@ -66,7 +62,7 @@ const logInUser = async function (req, res) {
     if (!correctPassword) {
         return res.status(201).json(
             {
-                success: true,
+                success: false,
                 message: "Password is incorrect"
             }
         )
@@ -108,4 +104,98 @@ const logoutUser = async (req, res) => {
     }
 }
 
-export { registerUser, logInUser, logoutUser }
+const updateUser = async function (req, res) {
+    const { userName, email, password, avatar } = await req.body
+    const userId = req.user; // middleware authentication
+    console.log(userId);
+
+    let user = await User.findById(userId);
+    if (!user) {
+        return res.status(400).json({
+            success: false,
+            message: "User does not found"
+        })
+    }
+    if (userName) { user.userName = userName }
+    if (email) { user.email = email }
+    if (password) { user.password = password }
+
+    if (avatar) {
+        const avatarLocalPath = req.files?.avatar[0]?.path;
+        if (!avatarLocalPath) {
+            throw new Error(400, "Avatar file is path is missing")
+        }
+        //uploade on cloudinary
+        const avatar = await uploadOnCloudinary(avatarLocalPath)
+    }
+
+    await user.updateOne({
+        userName: user.userName,
+        email: user.email,
+        password: user.password,
+        avatar: avatar?.url
+    })
+    return res.status(200).cookie("tokens", user.refreshToken).json({
+        user: user.refreshToken,
+        success: true,
+        message: "Update successfully"
+    })
+}
+
+
+
+export { registerUser, logInUser, logoutUser, updateUser }
+
+
+
+//const logInUser = async function (req, res) {
+//     const { email, password } = await req.body;
+//     console.log(email, password);
+
+//     if (
+//         [email, password].some((field) => field?.trim() === "")
+//     ) { console.log("all field required"); }
+
+//     const user = await User.findOne({ email })
+//     console.log(user);
+
+//     if (!user) {
+//         return res.status(409).json(
+//             {
+//                 success: false,
+//                 message: "User does not exist"
+//             }
+//         )
+//     }
+//     const correctPassword = await bcrypt.compare(password, user.password)
+//     console.log(correctPassword);
+
+//     if (!correctPassword) {
+//         return res.status(201).json(
+//             {
+//                 success: false,
+//                 message: "Password is incorrect"
+//             }
+//         )
+//     }
+
+//     const tokens = jwt.sign({
+//         _id: user._id,
+//         email: user.email,
+//     }, process.env.SECRET_KEY, { expiresIn: "2d" })
+//     await user.updateOne({ refreshToken: tokens });
+
+//     const options = {
+//         httpOnly: true,
+//         secure: true
+//     }
+//     return res.status(201).cookie("tokens", tokens, options).json(
+//         {
+//             user: tokens,
+//             success: true,
+//             message: "User login"
+//         }
+//     )
+
+
+// }
