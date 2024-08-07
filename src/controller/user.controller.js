@@ -45,11 +45,7 @@ const registerUser = async function (req, res) {
 
 const logInUser = async function (req, res) {
     const { email, password } = req.body
-    console.log(email, password);
-
     const user = await User.findOne({ email })
-    console.log(user);
-
     if (!user) {
         return res.status(201).json(
             {
@@ -142,9 +138,23 @@ const updateUser = async function (req, res) {
     })
 }
 
+const deleteUser = async function (req, res) {
+    const user = await User.findById(req.user._id)
+    //console.log(user);
+    if (!user) {
+        console.log("user do not found");
+    }
 
+    const deleteUser = await user.deleteOne({ user: user._id })
+    console.log(deleteUser);
 
-export { registerUser, logInUser, logoutUser, updateUser }
+    return res.status(200).cookie("token", "").json({
+        success: true,
+        message: "User deleted"
+    })
+}
+
+export { registerUser, logInUser, logoutUser, updateUser, deleteUser }
 
 
 
