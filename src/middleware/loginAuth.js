@@ -1,4 +1,4 @@
-import { logInUser } from "../controller/user.controller.js";
+
 import jwt from 'jsonwebtoken'
 import { User } from "../models/user.model.js";
 

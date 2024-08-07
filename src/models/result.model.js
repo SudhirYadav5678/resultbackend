@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose"
 
 const resultSchema = new Schema({
+    studentId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     marks: {
-        studentId: { type: Number },
         attendanceMarks: { type: Number },
         projectReviewMarks: { type: Number },
         assessmentMarks: { type: Number },
@@ -12,4 +12,4 @@ const resultSchema = new Schema({
 
 }, { timestamps: true })
 
-export const Results = mongoose.model("Results", resultSchema);
+export const Marks = mongoose.model("Marks", resultSchema);

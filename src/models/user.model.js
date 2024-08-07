@@ -26,10 +26,10 @@ const userSchema = new Schema({
     refreshToken: {
         type: String
     },
-    studentId: {
-        type: Schema.Types.ObjectId,
-        ref: "Results"
-    }
+    owner: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Marks"
+    }]
 
 }, { timestamps: true })
 
