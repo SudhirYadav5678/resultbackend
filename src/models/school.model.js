@@ -8,6 +8,7 @@ const schoolSchema = new Schema({
     logo: { type: String, default: "" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     mark: { type: mongoose.Schema.Types.ObjectId, ref: 'Marks' },
+    schoolTokens: { type: String }
 
 }, { timestamps: true });
 

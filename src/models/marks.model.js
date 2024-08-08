@@ -1,9 +1,12 @@
 import mongoose, { Schema } from "mongoose"
 
 const marksSchema = new Schema({
-    studentId: { type: Number, required: [true, "Student id is required"], unique: true },
-    studentName: { type: String, required: true },
-    studentEmail: { type: String, required: true, unique: true },
+    student: {
+        studentId: { type: Number, required: [true, "Student id is required"], unique: true },
+        studentName: { type: String, required: true },
+        studentEmail: { type: String, required: true, unique: true },
+    },
+
     marks: {
         attendanceMarks: { type: Number },
         projectReviewMarks: { type: Number },
@@ -16,9 +19,10 @@ const marksSchema = new Schema({
         ref: 'User',
         required: true
     },
-    shool: {
+    school: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'School',
+        required: true
     },
 
 }, { timestamps: true })
