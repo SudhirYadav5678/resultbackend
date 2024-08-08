@@ -7,10 +7,10 @@ import jwt from "jsonwebtoken"
 
 
 const registerUser = async function (req, res) {
-    const { userName, email, password } = await req.body
+    const { userName, email, password, role } = await req.body
     //console.log(userName, email, password);
     if (
-        [email, userName, password].some((field) => field?.trim() === "")
+        [email, userName, password, role].some((field) => field?.trim() === "")
     ) {
         throw new Error(400, "All fields are required")
     }
@@ -34,6 +34,7 @@ const registerUser = async function (req, res) {
         email,
         password,
         avatar: avatar.url,
+        role
     })
     return res.status(201).json(
         {
@@ -101,7 +102,7 @@ const logoutUser = async (req, res) => {
 }
 
 const updateUser = async function (req, res) {
-    const { userName, email, password, avatar } = await req.body
+    const { userName, email, password, avatar, role } = await req.body
     const userId = req.user; // middleware authentication
     console.log(userId);
 
@@ -115,7 +116,7 @@ const updateUser = async function (req, res) {
     if (userName) { user.userName = userName }
     if (email) { user.email = email }
     if (password) { user.password = password }
-
+    if (role) { user.role = role }
     if (avatar) {
         const avatarLocalPath = req.files?.avatar[0]?.path;
         if (!avatarLocalPath) {
@@ -129,7 +130,8 @@ const updateUser = async function (req, res) {
         userName: user.userName,
         email: user.email,
         password: user.password,
-        avatar: avatar?.url
+        avatar: avatar?.url,
+        role: user.role
     })
     return res.status(200).cookie("tokens", user.refreshToken).json({
         user: user.refreshToken,

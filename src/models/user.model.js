@@ -26,10 +26,19 @@ const userSchema = new Schema({
     refreshToken: {
         type: String
     },
-    owner: [{
+    role: {
+        type: String,
+        enum: ["Student", "Teacher"],
+        required: true
+    },
+    mark: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Marks"
-    }]
+        ref: 'Marks'
+    },
+    school: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'School'
+    }
 
 }, { timestamps: true })
 
