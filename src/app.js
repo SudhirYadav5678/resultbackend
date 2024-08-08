@@ -4,6 +4,7 @@ import cookieparser from "cookie-parser"
 import cors from 'cors'
 import userRoutes from './routes/userRoutes.js'
 import markRoutes from './routes/markRoutes.js'
+import schoolRoutes from './routes/schoolRoutes.js'
 
 
 
@@ -23,6 +24,7 @@ app.use(express.static("public"))
 //router
 app.use("/api/v1/users", userRoutes)
 app.use("/api/v1/marks", markRoutes)
+app.use('/api/v1/admin', schoolRoutes)
 
 export { app }
 

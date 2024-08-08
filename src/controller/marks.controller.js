@@ -30,4 +30,8 @@ const addMarks = async function (req, res) {
     })
 }
 
-export { addMarks }
+
+const updateMarks = async function () {
+
+}
+export { addMarks, updateMarks }
