@@ -63,4 +63,6 @@ const schoolLogin = async function (req, res) {
     )
 }
 
+
+
 export { schoolRegister, schoolLogin }
