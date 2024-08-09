@@ -13,7 +13,7 @@ const schoolRegister = async function (req, res) {
 
     const existedSchool = await School.findOne({ schoolEmail });
     if (existedSchool) {
-        return res.status(409).jsson({
+        return res.status(409).json({
             success: false,
             message: "School aready existed"
         })

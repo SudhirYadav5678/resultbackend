@@ -81,7 +81,71 @@ const addMarkCSV = async function (req, res) {
 
 }
 
-const updateMarks = async function () {
+const singleUpdateMarks = async function (req, res) {
+    const user = req.user._id
+    console.log(user);
+
+    const school = req.school._id
+    console.log(school);
+    const { studentId, studentName, studentEmail, attendanceMarks, projectReviewMarks, assessmentMarks, projectSubmissionMarks, LinkedInPostMarks } = await req.body;
+
+    let marks = await Marks.findOne({ studentEmail })
+    if (!marks) {
+        return res.status(400).json({
+            success: false,
+            message: "User does not found"
+        })
+    }
+    if (studentId) { marks.studentId = studentId }
+    if (studentName) { marks.studentName = studentName }
+    if (studentEmail) { marks.studentEmail = studentEmail }
+    if (attendanceMarks) { marks.attendanceMarks = attendanceMarks }
+    if (projectReviewMarks) { marks.projectReviewMarks = projectReviewMarks }
+    if (assessmentMarks) { marks.assessmentMarks = assessmentMarks }
+    if (projectSubmissionMarks) { marks.projectSubmissionMarks = projectSubmissionMarks }
+    if (LinkedInPostMarks) { marks.LinkedInPostMarks = LinkedInPostMarks }
+
+    await marks.updateOne({
+        studentId: marks.studentId,
+        studentName: marks.studentName,
+        attendanceMarks: marks.attendanceMarks,
+        projectReviewMarks: marks.projectReviewMarks,
+        assessmentMarks: marks.assessmentMarks,
+        projectSubmissionMarks: marks.projectSubmissionMarks,
+        LinkedInPostMarks: marks.LinkedInPostMarks
+    })
+    return res.status(200).json({
+        success: true,
+        message: "Update successfully"
+    })
+}
+
+const deleteMarks = async function (req, res) {
+    const user = req.user._id
+    const school = req.school._id
+
+    const { studentId, studentEmail } = await req.body
+
+    const marksDelete = await Marks.findOne({
+        studentEmail, studentId
+    })
+    console.log(marksDelete);
+
+    if (!marksDelete) {
+        return res.status(409).json({
+            success: false,
+            message: "User not found"
+        })
+    }
+
+    await Marks.deleteOne({
+        studentEmail,
+        studentId
+    });
+    return res.status(200).json({
+        success: true,
+        message: "User deleted"
+    })
 
 }
-export { addMarks, addMarkCSV, updateMarks }
+export { addMarks, addMarkCSV, singleUpdateMarks, deleteMarks }
