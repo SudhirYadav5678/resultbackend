@@ -1,33 +1,52 @@
 import { School } from "../models/school.model.js";
 import jwt from 'jsonwebtoken'
+import { uploadOnCloudinary } from "../utiles/cloudinary.js"
 
 const schoolRegister = async function (req, res) {
-    const user = req.user._id;
+    try {
+        const user = req.user._id;
 
-    const { schoolName, schoolEmail, schoolPhone, logo, schoolAdd } = await req.body
-    if (
-        [schoolName, schoolEmail, schoolPhone].some((field) => field?.trim() === "")
-    ) {
-        console.log("All fields are required");
-    }
+        const { schoolName, schoolEmail, schoolPhone, logo, schoolAdd } = await req.body
+        //console.log({ schoolName, schoolEmail, schoolPhone, logo, schoolAdd });
 
-    const existedSchool = await School.findOne({ schoolEmail });
-    if (existedSchool) {
+        if (
+            [schoolName, schoolEmail, schoolPhone].some((field) => field?.trim() === "")
+        ) {
+            console.log("All fields are required");
+        }
+
+        const existedSchool = await School.findOne({ schoolEmail });
+        if (existedSchool) {
+            return res.status(409).json({
+                success: false,
+                message: "School aready existed"
+            })
+        }
+        //avatar
+        const logoLocalPath = req.files?.logo?.[0]?.path;
+        if (!logoLocalPath) {
+            throw new Error(400, "Logo file is path is missing")
+        }
+        //uploade on cloudinary
+        const logoSchool = await uploadOnCloudinary(logoLocalPath)
+        //console.log(logoSchool);
+
+
+        const school = await School.create({
+            schoolName, schoolEmail, schoolPhone, logo: logoSchool.url, schoolAdd,
+            user: user,
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "School registerd"
+        })
+    } catch (error) {
         return res.status(409).json({
             success: false,
-            message: "School aready existed"
+            message: "School registerd failed!!!"
         })
     }
-
-    const school = await School.create({
-        schoolName, schoolEmail, schoolPhone, logo, schoolAdd,
-        user: user,
-    })
-
-    return res.status(200).json({
-        success: true,
-        message: "School registerd"
-    })
 }
 
 const schoolLogin = async function (req, res) {

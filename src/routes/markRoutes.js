@@ -5,7 +5,7 @@ import { schoolauth } from "../middleware/schoolAuth.js";
 import { upload } from "../middleware/multer.js";
 
 const router = Router();
-router.route('/addMarks').post(auth, schoolauth, addMarks)
+router.route('/marks').post(auth, schoolauth, addMarks)
 
 router.route('/addMarksCSV').post(auth, schoolauth, upload.fields([{
     name: 'csvFiles',

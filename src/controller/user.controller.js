@@ -21,7 +21,7 @@ const registerUser = async function (req, res) {
         throw new Error(409, "User with email already exists")
     }
     //avatar
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
     if (!avatarLocalPath) {
         throw new Error(400, "Avatar file is path is missing")
     }
@@ -45,44 +45,53 @@ const registerUser = async function (req, res) {
 }
 
 const logInUser = async function (req, res) {
-    const { email, password } = req.body
-    const user = await User.findOne({ email })
-    if (!user) {
-        return res.status(201).json(
-            {
-                success: false,
-                message: "User does not exist"
-            }
-        )
-    }
-    const correctPassword = await user.isPasswordCorrect(password)
-    if (!correctPassword) {
-        return res.status(201).json(
-            {
-                success: false,
-                message: "Password is incorrect"
-            }
-        )
-    }
-
-    const tokens = jwt.sign({
-        _id: user._id,
-        email: user.email,
-    }, process.env.SECRET_KEY, { expiresIn: "2d" })
-    await user.updateOne({ refreshToken: tokens });
-
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
-    return res.status(201).cookie("tokens", tokens, options).json(
-        {
-            user: tokens,
-            success: true,
-            message: "User login"
+    try {
+        const { email, password } = req.body
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(201).json(
+                {
+                    success: false,
+                    message: "User does not exist"
+                }
+            )
         }
-    )
+        const correctPassword = await user.isPasswordCorrect(password)
+        if (!correctPassword) {
+            return res.status(201).json(
+                {
+                    success: false,
+                    message: "Password is incorrect"
+                }
+            )
+        }
 
+        const tokens = jwt.sign({
+            _id: user._id,
+            email: user.email,
+        }, process.env.SECRET_KEY, { expiresIn: "2d" })
+        await user.updateOne({ refreshToken: tokens });
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+        return res.status(201).cookie("tokens", tokens, options).json(
+            {
+                user,
+                success: true,
+                message: "User login"
+            }
+        )
+
+    } catch (error) {
+        res.status(409).cookie("tokens", tokens, options).json(
+            {
+                success: false,
+                message: "User login fail"
+            }
+        )
+    }
 
 }
 
