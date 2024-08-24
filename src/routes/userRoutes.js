@@ -10,7 +10,7 @@ router.route('/register').post(upload.fields([{
 }]), registerUser)
 
 router.route('/login').post(logInUser)
-router.route('/logout').get(auth, logoutUser)
+router.route('/logout').get(logoutUser) //auth, 
 router.route('/update').post(upload.fields([{
     name: "avatar",
     maxCount: 1

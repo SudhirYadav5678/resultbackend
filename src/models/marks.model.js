@@ -12,7 +12,7 @@ const marksSchema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
     },
     school: {
         type: mongoose.Schema.Types.ObjectId,

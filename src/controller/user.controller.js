@@ -3,11 +3,9 @@ import bcrypt from "bcryptjs"
 import { uploadOnCloudinary } from "../utiles/cloudinary.js"
 import jwt from "jsonwebtoken"
 
-//token for login and logout
-
 
 const registerUser = async function (req, res) {
-    const { userName, email, password, role } = await req.body
+    const { userName, email, password, role, } = await req.body
     //console.log(userName, email, password);
     if (
         [email, userName, password, role].some((field) => field?.trim() === "")
@@ -69,7 +67,7 @@ const logInUser = async function (req, res) {
         const tokens = jwt.sign({
             _id: user._id,
             email: user.email,
-        }, process.env.SECRET_KEY, { expiresIn: "2d" })
+        }, process.env.SECRET_KEY, { expiresIn: "3d" })
         await user.updateOne({ refreshToken: tokens });
 
         const options = {
@@ -85,7 +83,7 @@ const logInUser = async function (req, res) {
         )
 
     } catch (error) {
-        res.status(409).cookie("tokens", tokens, options).json(
+        res.status(409).json(
             {
                 success: false,
                 message: "User login fail"
@@ -96,17 +94,23 @@ const logInUser = async function (req, res) {
 }
 
 const logoutUser = async (req, res) => {
+
     try {
+        // const user = req.user._id;
+        // const userId = await User.findById(user)
         const options = {
             httpOnly: true,
             secure: true
         }
-        return res.status(200).cookie("tokens", "", options).json({
-            message: "Logged out successfully.",
-            success: true
+        return res.status(200).clearCookie("tokens", "", options).json({
+            success: true,
+            message: "User Logout"
         })
     } catch (error) {
-        console.log(error);
+        return res.status(200).json({
+            success: false,
+            message: "User not Logout"
+        })
     }
 }
 
@@ -166,57 +170,3 @@ const deleteUser = async function (req, res) {
 }
 
 export { registerUser, logInUser, logoutUser, updateUser, deleteUser }
-
-
-
-//const logInUser = async function (req, res) {
-//     const { email, password } = await req.body;
-//     console.log(email, password);
-
-//     if (
-//         [email, password].some((field) => field?.trim() === "")
-//     ) { console.log("all field required"); }
-
-//     const user = await User.findOne({ email })
-//     console.log(user);
-
-//     if (!user) {
-//         return res.status(409).json(
-//             {
-//                 success: false,
-//                 message: "User does not exist"
-//             }
-//         )
-//     }
-//     const correctPassword = await bcrypt.compare(password, user.password)
-//     console.log(correctPassword);
-
-//     if (!correctPassword) {
-//         return res.status(201).json(
-//             {
-//                 success: false,
-//                 message: "Password is incorrect"
-//             }
-//         )
-//     }
-
-//     const tokens = jwt.sign({
-//         _id: user._id,
-//         email: user.email,
-//     }, process.env.SECRET_KEY, { expiresIn: "2d" })
-//     await user.updateOne({ refreshToken: tokens });
-
-//     const options = {
-//         httpOnly: true,
-//         secure: true
-//     }
-//     return res.status(201).cookie("tokens", tokens, options).json(
-//         {
-//             user: tokens,
-//             success: true,
-//             message: "User login"
-//         }
-//     )
-
-
-// }

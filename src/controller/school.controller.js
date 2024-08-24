@@ -33,7 +33,7 @@ const schoolRegister = async function (req, res) {
 
 
         const school = await School.create({
-            schoolName, schoolEmail, schoolPhone, logo: logoSchool.url, schoolAdd,
+            schoolName, schoolEmail, schoolPhone, schoolAdd, logo: logoSchool.url,
             user: user,
         })
 
@@ -50,36 +50,45 @@ const schoolRegister = async function (req, res) {
 }
 
 const schoolLogin = async function (req, res) {
-    const { schoolEmail } = await req.body
-    if (!schoolEmail) {
-        console.log("School id is requird");
-    }
-
-    const school = await School.findOne({ schoolEmail })
-    if (!school) {
-        return res.status(409).json({
-            success: false,
-            message: "School is not found"
-        })
-    }
-
-    const schoolToken = jwt.sign({
-        _id: school._id,
-        schoolEmail: school.schoolEmail
-    }, process.env.SECRET_KEY, { expiresIn: "2d" })
-    await school.updateOne({ schoolTokens: schoolToken });
-
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
-    return res.status(201).cookie("schoolToken", schoolToken, options).json(
-        {
-            user: schoolToken,
-            success: true,
-            message: "School login"
+    try {
+        const { schoolEmail } = await req.body
+        if (!schoolEmail) {
+            console.log("School id is requird");
         }
-    )
+
+        const school = await School.findOne({ schoolEmail })
+        if (!school) {
+            return res.status(409).json({
+                success: false,
+                message: "School is not found"
+            })
+        }
+
+        const schoolToken = jwt.sign({
+            _id: school._id,
+            schoolEmail: school.schoolEmail
+        }, process.env.SECRET_KEY, { expiresIn: "2d" })
+        await school.updateOne({ schoolTokens: schoolToken });
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+        return res.status(201).cookie("schoolToken", schoolToken, options).json(
+            {
+                schoolToken: schoolToken, //user
+                success: true,
+                message: "School login"
+            }
+        )
+    } catch (error) {
+        return res.status(400).json(
+            {
+                success: false,
+                message: "School login fail!!!"
+            }
+        )
+    }
 }
 
 

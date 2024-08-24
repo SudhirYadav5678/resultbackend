@@ -31,6 +31,12 @@ const userSchema = new Schema({
         enum: ["Student", "Teacher"],
         required: true
     },
+    studentId: {
+        type: String,
+    },
+    schoolName: {
+        type: String,
+    },
     mark: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Marks'
