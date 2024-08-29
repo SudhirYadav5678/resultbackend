@@ -4,6 +4,7 @@ const marksSchema = new Schema({
     studentId: { type: Number, required: [true, "Student id is required"] },
     studentName: { type: String, required: true },
     studentEmail: { type: String, required: true, unique: true },
+
     attendanceMarks: { type: Number },
     projectReviewMarks: { type: Number },
     assessmentMarks: { type: Number },

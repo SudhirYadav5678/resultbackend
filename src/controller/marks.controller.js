@@ -13,7 +13,7 @@ const addMarks = async function (req, res) {
 
 
         const { studentId, studentName, studentEmail, attendanceMarks, projectReviewMarks, assessmentMarks, projectSubmissionMarks, LinkedInPostMarks } = await req.body
-        console.log(studentId, studentName, studentEmail, attendanceMarks, projectReviewMarks, assessmentMarks, projectSubmissionMarks, LinkedInPostMarks);
+        //console.log(studentId, studentName, studentEmail, attendanceMarks, projectReviewMarks, assessmentMarks, projectSubmissionMarks, LinkedInPostMarks);
 
         const marks = await Marks.findOne({ studentId })
 
@@ -30,7 +30,7 @@ const addMarks = async function (req, res) {
             user: user,
             school: schoolToken
         })
-        console.log("addMarksInUser", addMarksInUser);
+        // console.log("addMarksInUser", addMarksInUser);
 
         return res.status(200).json({
             addMarksInUser: addMarksInUser._id,
@@ -50,8 +50,9 @@ const addMarkCSV = async function (req, res) {
     const user = req.user._id
     const school = req.school._id
 
+    const csvFiles = req.files?.csvFiles?.[0]?.path
+    //console.log(csvFiles);
 
-    const csvFiles = req.files?.csvFiles[0]?.path;
     if (!csvFiles) {
         throw new Error("CSV file is missing.")
     }
@@ -186,7 +187,7 @@ const getMarks = async function (req, res) {
         //console.log(verifiyStudent);
 
         const verifySchool = await School.findOne({ schoolName })
-        //console.log(verifySchool);
+        console.log("school NameVerification", verifySchool);
 
         if (!verifiyStudent && !verifySchool) {
             return res.status(409).json({
