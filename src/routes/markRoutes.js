@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addMarkCSV, addMarks, deleteMarks, getMarks, singleUpdateMarks } from "../controller/marks.controller.js";
+import { addMarkCSV, addMarks, deleteMarks, getAllMarks, getMarks, singleUpdateMarks } from "../controller/marks.controller.js";
 import { auth } from '../middleware/loginAuth.js'
 import { schoolauth } from "../middleware/schoolAuth.js";
 import { upload } from "../middleware/multer.js";
@@ -15,6 +15,7 @@ router.route('/addMarksCSV').post(auth, schoolauth, upload.fields([{
 router.route('/singleUpdateMarks').put(auth, schoolauth, singleUpdateMarks)
 router.route('/deleteMarks').post(auth, schoolauth, deleteMarks)
 router.route('/getMarks').post(auth, getMarks)
+router.route('/getAllMarks').post(auth, schoolauth, getAllMarks)
 
 
 export default router

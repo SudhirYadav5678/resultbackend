@@ -95,10 +95,10 @@ const addMarkCSV = async function (req, res) {
 const singleUpdateMarks = async function (req, res) {
     try {
         const user = req.user._id
-        console.log(user);
+        //console.log(user);
 
         const school = req.school._id
-        console.log(school);
+        //console.log(school);
         const { studentId, studentName, studentEmail, attendanceMarks, projectReviewMarks, assessmentMarks, projectSubmissionMarks, LinkedInPostMarks } = await req.body;
 
         let marks = await Marks.findOne({ studentEmail })
@@ -217,4 +217,41 @@ const getMarks = async function (req, res) {
     }
 }
 
-export { addMarks, addMarkCSV, singleUpdateMarks, deleteMarks, getMarks }
+
+const getAllMarks = async function (req, res) {
+    const user = req.user._id
+    const school = req.school._id
+    const { schoolId } = await req.body
+    // console.log("user", user);
+    // console.log("school", school);
+    // console.log("schoolid", schoolId);
+    if (!school === schoolId) {
+        return res.status(400).json({
+            success: false,
+            message: "Invaild Token URL access"
+        })
+    }
+
+    if (!school) {
+        return res.status(400).json({
+            success: false,
+            message: "Invaild Token access"
+        })
+    }
+
+    const resultAll = await Marks.find({ school: school._id }).exec()
+    if (!resultAll) {
+        return res.status(400).json({
+            success: false,
+            message: "Error while access all your data"
+        })
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "here your data",
+        resultAll,
+        user
+    })
+}
+export { addMarks, addMarkCSV, singleUpdateMarks, deleteMarks, getMarks, getAllMarks }

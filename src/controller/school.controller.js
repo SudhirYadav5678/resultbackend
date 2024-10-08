@@ -78,7 +78,8 @@ const schoolLogin = async function (req, res) {
             {
                 schoolToken: schoolToken, //user
                 success: true,
-                message: "School login"
+                message: "School login",
+                school
             }
         )
     } catch (error) {

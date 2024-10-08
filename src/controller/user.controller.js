@@ -1,7 +1,7 @@
 import { User } from "../models/user.model.js"
 import bcrypt from "bcryptjs"
 import { uploadOnCloudinary } from "../utiles/cloudinary.js"
-import jwt from "jsonwebtoken"
+import jwt from 'jsonwebtoken'
 
 
 const registerUser = async function (req, res) {
@@ -25,7 +25,6 @@ const registerUser = async function (req, res) {
     }
     //uploade on cloudinary
     const avatar = await uploadOnCloudinary(avatarLocalPath)
-
 
     const user = await User.create({
         userName,

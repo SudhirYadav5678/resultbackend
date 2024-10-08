@@ -6,23 +6,28 @@ export const auth = async function (req, res, next) {
     try {
         // after close site without logout user did not get token for logout.  //solved
         const token = await req.cookies?.tokens || req.header("Authorization")?.replace("Bearer ", "")
+        //console.log("token", token);
+
         if (!token) {
             return res.status(400).json({
                 success: false,
-                message: "Token is not get"
+                message: "Login Token is not get"
             })
         }
         const verify = jwt.verify(token, process.env.SECRET_KEY)
+        //console.log("verify", verify);
+
         if (!verify) {
             return res.status(400).json({
                 success: false,
-                message: "Token is not matched"
+                message: "Login Token is not matched"
             })
         }
         const user = await User.findById(verify?._id).select("-password -refreshToken")
-        if (!user) {
+        //console.log("user", user);
 
-            throw new ApiError(401, "Invalid Access Token")
+        if (!user) {
+            throw new ApiError(401, "Invalid Login Access Token")
         }
 
         req.user = user;
@@ -30,7 +35,7 @@ export const auth = async function (req, res, next) {
     } catch (error) {
         return res.status(400).json({
             success: false,
-            message: "Token is not get"
+            message: "Login Token is not get"
         })
     }
 }
