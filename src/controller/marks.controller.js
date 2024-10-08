@@ -143,11 +143,9 @@ const deleteMarks = async function (req, res) {
         const user = req.user._id
         const school = req.school._id
 
-        const { studentId, studentEmail } = await req.body
+        const { resultId } = await req.body
 
-        const marksDelete = await Marks.findOne({
-            studentEmail, studentId
-        })
+        const marksDelete = await Marks.findById(resultId)
         console.log(marksDelete);
 
         if (!marksDelete) {
@@ -157,10 +155,7 @@ const deleteMarks = async function (req, res) {
             })
         }
 
-        await Marks.deleteOne({
-            studentEmail,
-            studentId
-        });
+        await Marks.findByIdAndDelete(resultId)
         return res.status(200).json({
             success: true,
             message: "User deleted"
